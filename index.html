@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Products</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div style="margin-bottom: 60px;">
+            <nav class="navbar navbar-expand-md bg-primary navbar-dark fixed-top justify-content-between">
+                <a class="navbar-brand" href="#">Systems</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown" style="right: 100px;">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                              Cart
+                            </a>
+                            <div class="dropdown-menu" id="cart" style="margin: auto">
+                                <div id="cart-container" class="cart-container" style="margin:10px">
+                                </div>
+                                <div id="view-cart">
+                                    <a type="button" href="cart.html" role="button" class="btn btn-primary" style="color: white">View Cart</a>
+                                </div>
+                            </div>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li> -->
+                    </ul>
+                </div>  
+            </nav>    
+        </div>
+        <div class="container-fluid">
+            <div id="content">
+
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function(){
+                $.ajax({
+                    url: "http://localhost:8081/products",
+                    type: "GET",
+                    dataType: "json"
+                }).done(function(response) {
+                    let totalProducts = response.data.length;
+                    let finalResponse = "";
+                    let productsIteration = 0;
+                    for(let j=0; j<Math.ceil(totalProducts/4); j++){
+                        finalResponse += "<div class='row' style='margin-bottom: 5px'>";
+                        for(let i=productsIteration; i<totalProducts; i++){
+                            finalResponse += 
+                            "<div class='col-md-3'>" +
+                                "<div class='card' style='margin:5px'>" +
+                                    "<div class='card-header'>"+response.data[i].productName+"</div>" +
+                                    "<div class='card-body'><img style='max-height: 250px' class='mx-auto d-block img-fluid' src='"+response.data[i].image+"' /></div>" +
+                                    "<div class='card-footer'>" +
+                                        "<span>Price: Rs. "+response.data[i].productPrice+"</span>" +
+                                        "<span><button type='button' class='btn btn-outline-primary btn-sm' style='float:right' id='"+response.data[i].productId+"' onclick='addToCart(\""+response.data[i].productId+"\")' value='"+JSON.stringify(response.data[i])+"'>Add To Cart</button></span>" +
+                                    "</div>" +
+                                "</div>" +
+                            "</div>";
+                            productsIteration++;
+                        }
+                        finalResponse += '</div>';
+                    }
+                    $("#content").html(finalResponse);
+                }).fail(function(err){
+                });
+                updateCartDropdown();                
+            });
+            function addToCart(productId) {
+                let data = document.getElementById(productId).value;
+                let jsonData = JSON.parse(data);
+                var addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
+                if(addedToCart === null){
+                    addedToCart = [{...jsonData, quantity: 1}];
+                }else{
+                    let flag = false;
+                    for(let i=0 ; i<addedToCart.length ; i++){
+                        if(addedToCart[i].productId.toString().localeCompare(productId) === 0){
+                            addedToCart[i].quantity += 1;
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if(!flag){
+                        addedToCart.push({...jsonData, quantity: 1});
+                    }
+                }
+                localStorage.removeItem('addedToCart');
+                localStorage.setItem('addedToCart', JSON.stringify(addedToCart));
+                updateCartDropdown();
+            }
+
+            function countCartItems(){
+                let addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
+                let count = 0;
+                if(addedToCart !== null){
+                    for(let i=0; i< addedToCart.length; i++){
+                        count += addedToCart[i].quantity;
+                    }
+                }
+                return count;
+            }
+
+            function updateCartDropdown(){
+                // <p>There are 1 item(s) in the cart</p>
+                //     <div class="cart-item">
+                //         <p>2 x Dairy Milk Powder</p>
+                //         <p>Unit Price: 275.5</p>
+                //     </div>
+                let totalItems = countCartItems();
+                let p = document.createElement("p");
+                let p_node = document.createTextNode(`There are ${totalItems} items in the cart`);
+                p.appendChild(p_node);
+
+                let div = document.createElement("div");
+                div.className = "cart-item";
+
+                let addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
+                if(addedToCart !== null){
+                    for(let i=0; i<addedToCart.length ; i++){
+                        let p1 = document.createElement("p");
+                        let p1_node = document.createTextNode(`${addedToCart[i].quantity} X ${addedToCart[i].productName}`);
+                        p1.appendChild(p1_node);
+                        div.appendChild(p1);
+
+                        // let p1 = document.createElement("p");
+                        // let p1_node = document.createTextNode(`${addedToCart[i].quantity} X ${addedToCart[i].productName}`);
+                        // p1.appendChild(p1_node);
+                        // div.appendChild(p1);
+                    }
+                }
+                let newOuterDiv = document.createElement('div');
+                newOuterDiv.className = 'cart-container';
+                newOuterDiv.id = 'cart-container';
+                newOuterDiv.appendChild(p);
+                newOuterDiv.appendChild(div);
+                let outerDiv = document.getElementById('cart-container');
+                outerDiv.replaceWith(newOuterDiv);
+            }
+        </script>
+    </body>
+</html>
