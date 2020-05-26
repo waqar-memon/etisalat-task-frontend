@@ -11,7 +11,7 @@
     </head>
     <body>
         <div style="margin-bottom: 60px;">
-            <nav class="navbar navbar-expand-md bg-primary navbar-dark fixed-top justify-content-between">
+            <nav class="navbar navbar-expand-md bg-warning navbar-dark fixed-top justify-content-between">
                 <a class="navbar-brand" href="#">Systems</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
                   <span class="navbar-toggler-icon"></span>
@@ -76,7 +76,7 @@
                             <input type="text" class="form-control" placeholder="Address" id="address" name="address">
                         </div>
                         <p></p>
-                        <button type="button" class="btn btn-primary" onclick="placeOrder()">Place Order</button>
+                        <button type="button" class="btn btn-warning" onclick="placeOrder()">Place Order</button>
                     </form>
                 </div>
             </div>
@@ -106,7 +106,7 @@
                 }
             }
             function placeOrder(){
-                let profile = JSON.parse(localStorage.getItem('addedToCart'));
+                let profile = JSON.parse(localStorage.getItem('profile'));
                 let id = profile.id;
                 let mobile = document.getElementById('mobile').value;
                 let landline = document.getElementById('landline').value;

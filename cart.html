@@ -11,7 +11,7 @@
     </head>
     <body>
         <div style="margin-bottom: 60px;">
-            <nav class="navbar navbar-expand-md bg-primary navbar-dark fixed-top justify-content-between">
+            <nav class="navbar navbar-expand-md bg-warning navbar-dark fixed-top justify-content-between">
                 <a class="navbar-brand" href="index.html">Systems</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
                   <span class="navbar-toggler-icon"></span>
@@ -64,6 +64,7 @@
                               <th>Unit Price</th>
                               <th>Quantity</th>
                               <th>Sub Total</th>
+                              <th></th>
                             </tr>
                           </thead>
                           <tbody id="content">
@@ -74,21 +75,36 @@
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
-                    <button onclick="location.href = 'login.html';" id="place_order" type="button" class="btn btn-primary" style="color: white" disabled>Checkout</button>
+                    <button onclick="location.href = 'login.html';" id="place_order" type="button" class="btn btn-warning" style="color: white" disabled>Checkout</button>
                 </div>
             </div>
         </div>
 
         <script>
+            function removeItem(productId){
+                var addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
+                var newArray = [];
+                for(let i=0; i< addedToCart.length; i++){
+                    if(addedToCart[i].productId.toString().localeCompare(productId) !== 0){
+                        newArray.push(addedToCart[i]);
+                    }
+                }
+
+                localStorage.removeItem('addedToCart');
+                localStorage.setItem('addedToCart', JSON.stringify(newArray));
+                location.reload();
+            }
+
             function showCart(){
                 var addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
                 let finalResponse = "";
                 let total = 0;
-                if(addedToCart !== null){
+                if(addedToCart !== null && addedToCart.length > 0){
                     let totalItems = countCartItems();
                     let cartItemsHeading = document.getElementById("cart-items-heading");
                     cartItemsHeading.textContent = `There are current ${totalItems} items in your cart.`
                     let tbody = document.getElementById('content');
+                    let hasChildNodes = tbody.hasChildNodes();
                     for(let i=0; i<addedToCart.length; i++){
                         let tr = document.createElement("tr");
 
@@ -117,9 +133,20 @@
                         td.textContent = addedToCart[i].quantity * addedToCart[i].productPrice;
                         tr.appendChild(td);                        
 
+                        td = document.createElement("td");
+                        let a = document.createElement("a");
+                        a.role = "button";
+                        a.className = "btn btn-warning";
+                        a.textContent = "X";
+                        a.style.color = "white";
+                        a.onclick = () => removeItem(addedToCart[i].productId);
+                        td.appendChild(a);
+                        tr.appendChild(td);
+
                         tbody.appendChild(tr);
 
                         total += addedToCart[i].quantity * addedToCart[i].productPrice;
+
                     }
                     let tr = document.createElement("tr");
 
@@ -227,6 +254,8 @@
                 let outerDiv = document.getElementById('cart-container');
                 outerDiv.replaceWith(newOuterDiv);
             }
+
+
             showCart();
         </script>
     </body>

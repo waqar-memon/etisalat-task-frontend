@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Login</title>
+        <title>User Registration</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -59,8 +59,7 @@
             <div class="row">
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
-                    <h4 id="heading" style="text-align: center;">Login</h4>
-                    <p>Please login to get contact information for shipping.</p>
+                    <h4 id="heading" style="text-align: center;">User Registration</h4>
                 </div>
             </div>
             <div class="row">
@@ -68,21 +67,39 @@
                 <div class="col-md-4">
                     <form>
                         <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Full Name" id="name" name="name">
+                        </div>
+                        <div class="input-group mb-3">
                           <input type="email" class="form-control" placeholder="Email" id="email" name="email">
                         </div>
                     
                         <div class="input-group mb-3">
                           <input type="password" class="form-control" placeholder="Password" id="password" name="password">
                         </div>
-                        <p></p>
-                        <button type="button" class="btn btn-warning text-white" onclick="login()">Login</button>
+                        <div class="input-group mb-3">
+                            <input type="number" class="form-control" placeholder="Mobile Number" id="mobile" name="mobile">
+                          </div>
+                          <div class="input-group mb-3">
+                              <input type="number" class="form-control" placeholder="Landline" id="landline" name="landline">
+                          </div>
+                          <div class="input-group mb-3">
+                              <input type="text" class="form-control" placeholder="Country" id="country" name="country">
+                          </div>
+                          <div class="input-group mb-3">
+                              <input type="text" class="form-control" placeholder="City" id="city" name="city">
+                          </div>
+                          <div class="input-group mb-3">
+                              <input type="text" class="form-control" placeholder="Address" id="address" name="address">
+                          </div>                        
+                        <p>By clicking submit, your account will be created and you will be redirected to further procedings.</p>
+                        <button type="button" class="btn btn-warning text-white" onclick="register()">Submit</button>
                     </form>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
-                    <a href="register.html">New user? Register here to place order directly.</a>
+                    <a href="login.html">Already registered? Click here.</a>
                 </div>
             </div>
         </div>
@@ -91,21 +108,25 @@
             $(document).ready(function(){
 
             });
-            function login(){
+            function register(){
+                let name = document.getElementById('name').value;
                 let email = document.getElementById("email").value;
                 let password = document.getElementById("password").value;
-                let data = {email: email, password: password};
+                let mobile = document.getElementById('mobile').value;
+                let landline = document.getElementById('landline').value;
+                let country = document.getElementById('country').value;
+                let city = document.getElementById('city').value;
+                let address = document.getElementById('address').value;
+                let customer = {name: name, email: email, password: password, mobile: mobile, landline: landline, country: country, city: city, address: address};
                 $.ajax({
-                    url: "http://localhost:8082/customers/authenticate",
+                    url: "http://localhost:8082/customers/add",
                     type: "POST",
                     method: "POST",
-                    data: JSON.stringify(data),
+                    data: JSON.stringify(customer),
                     dataType: "json",
                     contentType: "application/json"
                 }).done(function(response) {
-                    if(response.message?.status === "401"){
-                        $('.toast').toast('show');
-                    }else{
+                    if(response.message?.status === "200"){
                         localStorage.setItem('profile', JSON.stringify(response.data));
                         window.location.href = "place_order.html";
                     }
