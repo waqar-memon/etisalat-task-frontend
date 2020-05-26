@@ -9,6 +9,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="assets/scripts/scripts.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
         integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 </head>
@@ -51,14 +52,14 @@
                     </li>
                 </ul>
             </div>
-        </nav>
+        </nav>        
+        <!-- <div w3-include-html="shared/header.html"></div> -->
     </div>
     <div class="container-fluid" style="z-index: -2; position: absolute;">
         <div id="content">
 
         </div>
     </div>
-
     <script>
         $(document).ready(function () {
             $.ajax({
@@ -92,73 +93,7 @@
             });
             updateCartDropdown();
         });
-        function addToCart(productId) {
-            let data = document.getElementById(productId).value;
-            let jsonData = JSON.parse(data);
-            var addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
-            if (addedToCart === null) {
-                addedToCart = [{ ...jsonData, quantity: 1 }];
-            } else {
-                let flag = false;
-                for (let i = 0; i < addedToCart.length; i++) {
-                    if (addedToCart[i].productId.toString().localeCompare(productId) === 0) {
-                        addedToCart[i].quantity += 1;
-                        flag = true;
-                        break;
-                    }
-                }
-                if (!flag) {
-                    addedToCart.push({ ...jsonData, quantity: 1 });
-                }
-            }
-            localStorage.removeItem('addedToCart');
-            localStorage.setItem('addedToCart', JSON.stringify(addedToCart));
-            updateCartDropdown();
-            $('.toast').toast('show');
-        }
-
-        function countCartItems() {
-            let addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
-            let count = 0;
-            if (addedToCart !== null) {
-                for (let i = 0; i < addedToCart.length; i++) {
-                    count += addedToCart[i].quantity;
-                }
-            }
-            return count;
-        }
-
-        function updateCartDropdown() {
-            let totalItems = countCartItems();
-            let p = document.createElement("p");
-            p.style.fontSize = "12px";
-            p.style.backgroundColor = "black";
-            p.style.color = "white";
-            p.style.padding = "5px";
-            let p_node = document.createTextNode(`There are ${totalItems} items in the cart`);
-            p.appendChild(p_node);
-
-            let div = document.createElement("div");
-            div.className = "cart-item";
-
-            let addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
-            if (addedToCart !== null) {
-                for (let i = 0; i < addedToCart.length; i++) {
-                    let p1 = document.createElement("p");
-                    p1.style.fontSize = "12px";
-                    let p1_node = document.createTextNode(`${addedToCart[i].quantity} X ${addedToCart[i].productName}`);
-                    p1.appendChild(p1_node);
-                    div.appendChild(p1);
-                }
-            }
-            let newOuterDiv = document.createElement('div');
-            newOuterDiv.className = 'cart-container';
-            newOuterDiv.id = 'cart-container';
-            newOuterDiv.appendChild(p);
-            newOuterDiv.appendChild(div);
-            let outerDiv = document.getElementById('cart-container');
-            outerDiv.replaceWith(newOuterDiv);
-        }
+        includeHTML();
     </script>
 </body>
 

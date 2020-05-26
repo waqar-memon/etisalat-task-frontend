@@ -8,6 +8,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="assets/scripts/scripts.js"></script>
     </head>
     <body>
         <div class="toast" data-autohide="false" style="position: fixed;top:60px;right:5px;z-index: 999;">
@@ -91,27 +92,6 @@
             $(document).ready(function(){
 
             });
-            function login(){
-                let email = document.getElementById("email").value;
-                let password = document.getElementById("password").value;
-                let data = {email: email, password: password};
-                $.ajax({
-                    url: "http://localhost:8082/customers/authenticate",
-                    type: "POST",
-                    method: "POST",
-                    data: JSON.stringify(data),
-                    dataType: "json",
-                    contentType: "application/json"
-                }).done(function(response) {
-                    if(response.message?.status === "401"){
-                        $('.toast').toast('show');
-                    }else{
-                        localStorage.setItem('profile', JSON.stringify(response.data));
-                        window.location.href = "place_order.html";
-                    }
-                }).fail(function(err){
-                });
-            }
         </script>
     </body>
 </html>

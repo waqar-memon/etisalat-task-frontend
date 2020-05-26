@@ -8,6 +8,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="assets/scripts/scripts.js"></script>
     </head>
     <body>
         <div style="margin-bottom: 60px;">
@@ -88,58 +89,6 @@
         </div>
 
         <script>
-            function renderData(){
-                let profile = JSON.parse(localStorage.getItem('profile'));
-                if(profile !== null){
-                    let name = document.getElementById('name');
-                    name.setAttribute('value', profile.name);
-                    let mobile = document.getElementById('mobile');
-                    mobile.setAttribute('value', profile.mobile);
-                    let landline = document.getElementById('landline');
-                    landline.setAttribute('value', profile.landline);
-                    let country = document.getElementById('country');
-                    country.setAttribute('value', profile.country);
-                    let city = document.getElementById('city');
-                    city.setAttribute('value', profile.city);
-                    let address = document.getElementById('address');
-                    address.setAttribute('value', profile.address);
-                }
-            }
-            function placeOrder(){
-                let profile = JSON.parse(localStorage.getItem('profile'));
-                let id = profile.id;
-                let mobile = document.getElementById('mobile').value;
-                let landline = document.getElementById('landline').value;
-                let country = document.getElementById('country').value;
-                let city = document.getElementById('city').value;
-                let address = document.getElementById('address').value;
-                let customer = {id: id, mobile: mobile, landline: landline, country: country, city: city, address: address};
-
-                let cartItems = JSON.parse(localStorage.getItem('addedToCart'));
-                let products = [];
-                for(let i=0; i< cartItems.length; i++){
-                    let obj = {
-                        id: cartItems[i].productId,
-                        quantity: cartItems[i].quantity
-                    }
-                    products.push(obj);
-                }
-                $.ajax({
-                    url: "http://localhost:8083/orders/add",
-                    type: "POST",
-                    method: "POST",
-                    data: JSON.stringify({customer: customer, products: products}),
-                    dataType: "json",
-                    contentType: "application/json"
-                }).done(function(response) {
-                    // alert(response.data.orderId);
-                    localStorage.setItem('orderId', response.data.orderId);
-                    localStorage.removeItem('profile');
-                    localStorage.removeItem('addedToCart');
-                    window.location.href = "order_placed.html";
-                }).fail(function(err){
-                });
-            }
             renderData();
         </script>
     </body>
