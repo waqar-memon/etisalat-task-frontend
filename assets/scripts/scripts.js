@@ -1,4 +1,4 @@
-function includeHTML() {
+function includeHTML(showCart) {
     var z, i, elmnt, file, xhttp;
     /* Loop through a collection of all HTML elements: */
     z = document.getElementsByTagName("*");
@@ -15,14 +15,19 @@ function includeHTML() {
             if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
             /* Remove the attribute, and call this function once more: */
             elmnt.removeAttribute("w3-include-html");
-            includeHTML();
+            includeHTML(showCart);
           }
         }
         xhttp.open("GET", file, true);
         xhttp.send();
+
         /* Exit the function: */
         return;
       }
+    }
+    if(!showCart){
+        let cartDiv = document.getElementById('ul-cart')
+        cartDiv.style.display = "none";
     }
   }
 
@@ -273,4 +278,30 @@ function renderOrderId(){
     let orderId = localStorage.getItem('orderId');
     let p = document.getElementById("order-id");
     p.textContent = orderId;
+}
+
+function register(){
+    let name = document.getElementById('name').value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+    let mobile = document.getElementById('mobile').value;
+    let landline = document.getElementById('landline').value;
+    let country = document.getElementById('country').value;
+    let city = document.getElementById('city').value;
+    let address = document.getElementById('address').value;
+    let customer = {name: name, email: email, password: password, mobile: mobile, landline: landline, country: country, city: city, address: address};
+    $.ajax({
+        url: "http://localhost:8082/customers/add",
+        type: "POST",
+        method: "POST",
+        data: JSON.stringify(customer),
+        dataType: "json",
+        contentType: "application/json"
+    }).done(function(response) {
+        if(response.message?.status === "200"){
+            localStorage.setItem('profile', JSON.stringify(response.data));
+            window.location.href = "place_order.html";
+        }
+    }).fail(function(err){
+    });
 }
