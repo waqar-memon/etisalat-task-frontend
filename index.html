@@ -34,35 +34,7 @@
     </div>
     <script>
         $(document).ready(function () {
-            $.ajax({
-                url: "http://localhost:8081/products",
-                type: "GET",
-                dataType: "json"
-            }).done(function (response) {
-                let totalProducts = response.data.length;
-                let finalResponse = "";
-                let productsIteration = 0;
-                for (let j = 0; j < Math.ceil(totalProducts / 4); j++) {
-                    finalResponse += "<div class='row' style='margin-bottom: 5px'>";
-                    for (let i = productsIteration; i < totalProducts; i++) {
-                        finalResponse +=
-                            "<div class='col-md-3'>" +
-                            "<div class='card' style='margin:5px'>" +
-                                "<div class='card-header'>" + response.data[i].productName + "</div>" +
-                                "<div class='card-body'><img style='max-height: 220px' class='mx-auto d-block img-fluid' src='" + response.data[i].image + "' /></div>" +
-                                "<div class='card-footer'>" +
-                                "<span>Price: Rs. " + response.data[i].productPrice + "</span>" +
-                                "<span><button type='button' class='btn btn-outline-warning btn-sm' style='float:right' id='" + response.data[i].productId + "' onclick='addToCart(\"" + response.data[i].productId + "\")' value='" + JSON.stringify(response.data[i]) + "'>Add To Cart</button></span>" +
-                                "</div>" +
-                            "</div>" +
-                            "</div>";
-                        productsIteration++;
-                    }
-                    finalResponse += '</div>';
-                }
-                $("#content").html(finalResponse);
-            }).fail(function (err) {
-            });
+            getProducts();
             updateCartDropdown();
         });
         includeHTML(true);

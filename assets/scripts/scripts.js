@@ -1,3 +1,77 @@
+var PRODUCT_CATALOG_SERVICE_URL = "http://localhost:8081/products";
+var CUSTOMER_SERVICE_URL = "http://localhost:8082/customers";
+var ORDER_SERVICE_URL = "http://localhost:8083/orders";
+
+function getProducts(){
+    $.ajax({
+        url: PRODUCT_CATALOG_SERVICE_URL,
+        type: "GET",
+        dataType: "json"
+    }).done(function (response) {
+        let totalProducts = response.data.length;
+        let productsIteration = 0;
+        for (let j = 0; j < Math.ceil(totalProducts / 4); j++) {
+            let row = document.createElement("div");
+            row.className = "row";
+            row.style.marginBottom = "5px";
+
+            for (let i = productsIteration; i < totalProducts; i++) {
+                let col = document.createElement("div");
+                col.className = "col-md-3";
+
+                let card = document.createElement("div");
+                card.className = "card";
+                card.style.margin = "5px";
+
+                let cardHeader = document.createElement("div");
+                cardHeader.className = "card-header";
+                cardHeader.textContent = response.data[i].productName;
+
+                let cardBody = document.createElement("div");
+                cardBody.className = "card-body";
+
+                let img = document.createElement("img");
+                img.style.maxHeight = "220px";
+                img.className = "mx-auto d-block img-fluid";
+                img.src = response.data[i].image;
+
+                cardBody.appendChild(img);
+
+                let cardFooter = document.createElement("div");
+                cardFooter.className = "card-footer";
+
+                let spanPrice = document.createElement("span");
+                spanPrice.textContent = "Price: Rs. " + response.data[i].productPrice;
+
+                let spanBtn = document.createElement("span");
+
+                let addToCartBtn = document.createElement("button");
+                addToCartBtn.type = "button";
+                addToCartBtn.className = "btn btn-outline-warning btn-sm";
+                addToCartBtn.style.float = "right";
+                addToCartBtn.id = response.data[i].productId;
+                addToCartBtn.onclick = () => addToCart(response.data[i].productId);
+                addToCartBtn.value = JSON.stringify(response.data[i]);
+                addToCartBtn.textContent = "Add to Cart";
+                spanBtn.appendChild(addToCartBtn);
+
+                cardFooter.appendChild(spanPrice);
+                cardFooter.appendChild(spanBtn);
+
+                card.appendChild(cardHeader);
+                card.appendChild(cardBody);
+                card.appendChild(cardFooter);
+
+                col.appendChild(card);
+                row.appendChild(col);
+                productsIteration++;
+            }
+            document.getElementById("content").appendChild(row);
+        }
+    }).fail(function (err) {
+    });
+}
+
 function includeHTML(showCart) {
     var z, i, elmnt, file, xhttp;
     /* Loop through a collection of all HTML elements: */
@@ -204,7 +278,7 @@ function login(){
     let password = document.getElementById("password").value;
     let data = {email: email, password: password};
     $.ajax({
-        url: "http://localhost:8082/customers/authenticate",
+        url: CUSTOMER_SERVICE_URL+"/authenticate",
         type: "POST",
         method: "POST",
         data: JSON.stringify(data),
@@ -258,7 +332,7 @@ function placeOrder(){
         products.push(obj);
     }
     $.ajax({
-        url: "http://localhost:8083/orders/add",
+        url: ORDER_SERVICE_URL+"/add",
         type: "POST",
         method: "POST",
         data: JSON.stringify({customer: customer, products: products}),
@@ -291,7 +365,7 @@ function register(){
     let address = document.getElementById('address').value;
     let customer = {name: name, email: email, password: password, mobile: mobile, landline: landline, country: country, city: city, address: address};
     $.ajax({
-        url: "http://localhost:8082/customers/add",
+        url: CUSTOMER_SERVICE_URL+"/add",
         type: "POST",
         method: "POST",
         data: JSON.stringify(customer),
