@@ -1,6 +1,6 @@
-var PRODUCT_CATALOG_SERVICE_URL = "http://localhost:8081/products";
-var CUSTOMER_SERVICE_URL = "http://localhost:8082/customers";
-var ORDER_SERVICE_URL = "http://localhost:8083/orders";
+var PRODUCT_CATALOG_SERVICE_URL = "http://productscatalogservice-env-1.eba-p2ftpvq4.us-east-2.elasticbeanstalk.com/products";
+var CUSTOMER_SERVICE_URL = "http://customerservice-env.eba-mpmcmemc.us-east-2.elasticbeanstalk.com/customers";
+var ORDER_SERVICE_URL = "http://orderservice-env.eba-qdghx7ek.us-east-2.elasticbeanstalk.com/orders";
 
 function getProducts(){
     $.ajax({
@@ -9,15 +9,15 @@ function getProducts(){
         dataType: "json"
     }).done(function (response) {
         let totalProducts = response.data.length;
-        let productsIteration = 0;
-        for (let j = 0; j < Math.ceil(totalProducts / 4); j++) {
+        var productsIteration = 0;
+        // for (let j = 0; j < Math.ceil(totalProducts / 4); j++) {
             let row = document.createElement("div");
             row.className = "row";
             row.style.marginBottom = "5px";
 
             for (let i = productsIteration; i < totalProducts; i++) {
                 let col = document.createElement("div");
-                col.className = "col-md-3";
+                col.className = "col-sm-6 col-md-4 col-lg-3";
 
                 let card = document.createElement("div");
                 card.className = "card";
@@ -67,7 +67,7 @@ function getProducts(){
                 productsIteration++;
             }
             document.getElementById("content").appendChild(row);
-        }
+        // }
     }).fail(function (err) {
     });
 }
