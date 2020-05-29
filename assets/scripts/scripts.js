@@ -39,20 +39,33 @@ function getProducts(){
 
                 let cardFooter = document.createElement("div");
                 cardFooter.className = "card-footer";
+                cardFooter.style.display = "table";
 
                 let spanPrice = document.createElement("span");
-                spanPrice.textContent = "Price: Rs. " + response.data[i].productPrice;
+                spanPrice.textContent = "PKR " + response.data[i].productPrice;
+                spanPrice.style.display = "table-cell";
+                spanPrice.style.verticalAlign = "middle";
 
                 let spanBtn = document.createElement("span");
 
-                let addToCartBtn = document.createElement("button");
-                addToCartBtn.type = "button";
-                addToCartBtn.className = "btn btn-outline-warning btn-sm";
+                let addToCartBtn = document.createElement("a");
+                // addToCartBtn.type = "button";
+                addToCartBtn.className = "btn btn-add-to-cart";
                 addToCartBtn.style.float = "right";
+                addToCartBtn.style.textDecoration = "none";
                 addToCartBtn.id = response.data[i].productId;
                 addToCartBtn.onclick = () => addToCart(response.data[i].productId);
                 addToCartBtn.value = JSON.stringify(response.data[i]);
-                addToCartBtn.textContent = "Add to Cart";
+                addToCartBtn.setAttribute("data-toggle", "tooltip");
+                addToCartBtn.title = "Add to Cart";
+                // addToCartBtn.textContent = "Add to Cart";
+
+                let cartIcon = document.createElement("i");
+                cartIcon.className = "fas fa-cart-plus fa-2x";
+                // cartIcon.style.textDecoration = "none";
+
+                addToCartBtn.appendChild(cartIcon);
+
                 spanBtn.appendChild(addToCartBtn);
 
                 cardFooter.appendChild(spanPrice);
@@ -105,6 +118,26 @@ function includeHTML(showCart) {
     }
   }
 
+  function updateCartDueQtyChange(){
+    let changedQtyProducts = JSON.parse(localStorage.getItem('changedQtyProducts'));
+    var addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
+
+    if(changedQtyProducts !== null){
+        for(let i=0 ; i<changedQtyProducts.length; i++){
+            for(let j=0 ; j<addedToCart.length; j++){
+                if(addedToCart[j].productId === changedQtyProducts[i]){
+                    let qty = document.getElementById("qty-"+changedQtyProducts[i]).value;
+                    addedToCart[j].quantity = parseInt(qty);
+                }
+            }
+        }        
+    }
+    localStorage.removeItem('addedToCart');
+    localStorage.setItem('addedToCart', JSON.stringify(addedToCart));
+    localStorage.removeItem('changedQtyProducts');
+    window.location.href = "cart.html";
+  }
+
   function addToCart(productId) {
     let data = document.getElementById(productId).value;
     let jsonData = JSON.parse(data);
@@ -129,6 +162,18 @@ function includeHTML(showCart) {
     updateCartDropdown();
     $('.toast').toast('show');
 }
+
+function saveProductIdDueQtyChange(productId){
+    let changedQtyProducts = JSON.parse(localStorage.getItem('changedQtyProducts'));
+    if(changedQtyProducts === null){
+        changedQtyProducts = [productId];
+    }else if(!changedQtyProducts.includes(productId)){
+        changedQtyProducts.push(productId);
+    }
+    localStorage.removeItem('changedQtyProducts');
+    localStorage.setItem('changedQtyProducts', JSON.stringify(changedQtyProducts));
+}
+
 
 function countCartItems() {
     let addedToCart = JSON.parse(localStorage.getItem('addedToCart'));
@@ -213,16 +258,39 @@ function showCart(){
             tr.appendChild(td);    
 
             td = document.createElement("td");
+            td.id = "up-"+addedToCart[i].productId;
             td.textContent = addedToCart[i].productPrice;
             tr.appendChild(td);
 
             td = document.createElement("td");
-            td.textContent = addedToCart[i].quantity;
+
+            let quantityInput = document.createElement("input");
+            quantityInput.type = "number";
+            quantityInput.value = addedToCart[i].quantity;
+            quantityInput.id = "qty-"+addedToCart[i].productId;
+            quantityInput.className = "form-control";
+            quantityInput.style.width = "50%";
+            quantityInput.min = "1";
+            quantityInput.onchange = () => {
+                let subTotal = document.getElementById("st-"+addedToCart[i].productId);
+                let qty = document.getElementById("qty-"+addedToCart[i].productId).value;
+                let up = document.getElementById("up-"+addedToCart[i].productId).innerText;
+                if(qty == 0){
+                    qty = 1;
+                    document.getElementById("qty-"+addedToCart[i].productId).value = qty;
+                }
+                subTotal.textContent = qty * up;
+                saveProductIdDueQtyChange(addedToCart[i].productId);
+            }
+            
+            td.appendChild(quantityInput);
+            // td.textContent = addedToCart[i].quantity;
             tr.appendChild(td);
 
             td = document.createElement("td");
+            td.id = "st-" + addedToCart[i].productId;
             td.textContent = addedToCart[i].quantity * addedToCart[i].productPrice;
-            tr.appendChild(td);                        
+            tr.appendChild(td);
 
             td = document.createElement("td");
             let a = document.createElement("a");
@@ -264,6 +332,9 @@ function showCart(){
 
         let place_order_btn = document.getElementById("place_order");
         place_order_btn.disabled = false;
+
+        let update_cart_btn = document.getElementById("update_cart");
+        update_cart_btn.disabled = false;
     }else{
         let table = document.getElementById("table");
 
@@ -272,7 +343,9 @@ function showCart(){
 
         table.replaceWith(p);
     }
+    localStorage.removeItem('changedQtyProducts');
 }
+
 function login(){
     let email = document.getElementById("email").value;
     let password = document.getElementById("password").value;

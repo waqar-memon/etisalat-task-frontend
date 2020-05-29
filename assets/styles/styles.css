@@ -10,3 +10,14 @@
     }
 }
 
+.btn-add-to-cart a:link {
+    color: white;
+    padding: 14px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* a:hover .btn-add-to-cart {
+    background-color: green;
+} */
