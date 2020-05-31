@@ -2,6 +2,10 @@ var PRODUCT_CATALOG_SERVICE_URL = "http://productscatalogservice-env-1.eba-p2ftp
 var CUSTOMER_SERVICE_URL = "http://customerservice-env.eba-mpmcmemc.us-east-2.elasticbeanstalk.com/customers";
 var ORDER_SERVICE_URL = "http://orderservice-env.eba-qdghx7ek.us-east-2.elasticbeanstalk.com/orders";
 
+// var PRODUCT_CATALOG_SERVICE_URL = "http://localhost:8081/products";
+// var CUSTOMER_SERVICE_URL = "http://localhost:8082/customers";
+// var ORDER_SERVICE_URL = "http://localhost:5000/orders";
+
 function getProducts(){
     $.ajax({
         url: PRODUCT_CATALOG_SERVICE_URL,
